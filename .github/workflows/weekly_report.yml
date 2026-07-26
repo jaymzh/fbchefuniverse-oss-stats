@@ -17,21 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TZ: America/Los_Angeles
+    permissions:
+      contents: write
+      issues: write
+      pull_requests: write
     steps:
-      - name: Generate PatchyMcBotFace token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
-        id: app-token
-        with:
-          client-id: ${{ secrets.BOT_APP_ID }}
-          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          owner: jaymzh
-          repositories: fbchefuniverse-oss-stats
-          permission-contents: write
-          permission-pull-requests: write
-
       - uses: actions/checkout@v7
-        with:
-          token: ${{ steps.app-token.outputs.token }}
 
       - name: Install ImageMagick
         run: |
@@ -49,15 +40,15 @@ jobs:
 
       - name: Generate weekly reports
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           test -n "$GH_TOKEN"
           ./scripts/run_report.sh
 
       - name: Commit and open update weekly PR
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           report_date="$(date +%F)"
           branch="automation/weekly-report-$report_date"
