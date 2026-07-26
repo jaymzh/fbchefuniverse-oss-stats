@@ -37,13 +37,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Running report..."
           ./scripts/run_report.sh
 
       - name: Commit and open update weekly PR
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Configuring git..."
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          echo "Making branch and committing report..."
           report_date="$(date +%F)"
           branch="automation/weekly-report-$report_date"
           git switch -c "$branch"
@@ -52,11 +56,14 @@ jobs:
             echo "No weekly report changes to commit."
             exit 0
           fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit --signoff -m "Update weekly Chef OSS reports for $report_date"
           git push --force-with-lease origin "HEAD:$branch"
+
+          echo "Creating PR..."
           # Make a PR only if this week doesn't have a PR already
           if ! gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number' | grep -q .; then
-            gh pr create --base main --head "$branch" --title "Weekly Chef OSS reports for $report_date" --body "Automated weekly report generation for $report_date."
+            gh pr create --base main --head "$branch" --title "Weekly FBChefUniverse OSS reports for $report_date" --body "Automated weekly report generation for $report_date."
+            echo "PR created!"
+          else
+            echo "PR already exists, skipping..."
           fi
