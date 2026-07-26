@@ -76,14 +76,14 @@ if [ -z "$d" ] ; then
 fi
 
 cmd="./bin/repo_stats"
-out="repo_reports/${d}.md"
+report="repo_reports/${d}.md"
 debug "About to run $cmd"
 if ! out=$($cmd); then
     die "Failed to run repo_stats: $!"
 fi
 
 debug "Generating full report"
-cat >"$out"  <<EOF
+cat >"$report" <<EOF
 $PREFIX
 
 $out
