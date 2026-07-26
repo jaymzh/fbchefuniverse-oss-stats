@@ -1,0 +1,33 @@
+name: Lint
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install system deps
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install imagemagick libmagickwand-dev
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4'
+    - name: Install ruby dependencies
+      run: bundle install
+    - name: Run chefstyle
+      run: |-
+        ./scripts/oss_stats_script.sh run_cookstyle.sh
+    - name: Run markdownlint
+      # Only run MDL on our MDs , not the auto-generated reports
+      run: |-
+        ./scripts/oss_stats_script.sh run_markdownlint.sh $(find . -type f -name \*.md | grep -v _reports)
