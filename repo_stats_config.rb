@@ -1,82 +1,40 @@
-# Example configuration file for repo_stats
-
-# You can specify branches for specific repos under 'organizations'
-# below, but for anything not specified it'll use `default_branches`
-# (which defaults to ['main'])
+# Copyright (c) 2025-present, Phil Dibowitz
+# Copyright (c) 2025-present, Meta Platforms, Inc. and affiliates
+# All rights reserved.
 #
-# Note do NOT set 'days' or 'branches' in your config, as that overrides
-# everything and is meant for CLI options.
-default_branches %w{main v2}
-default_days 30
-# you can specify 'days', but it will override everything, including
-# anything repo-specific below, so don't do that.
-log_level :info
-ci_timeout 600
-include_list false
-# by default we don't count unmerged-but-closed PRs as in "closed PRs"
-# but some workflows push commits that reference the PR as a way of
-# "merging" the PR, and if your workflow does so, you can set this so
-# that we count such PRs as "merged."
-count_unmerged_prs false
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-# the most interesting part about this config file
-# is the organizations block. It allows you to specify
-# all of the repos that will be processed and how
-# they should be processed
+default_days 7
+mode %w{pr ci}
+# shipit doesn't "merge" prs, it closes them
+# so we need to count them in the stats
+count_unmerged_prs true
 organizations(
   {
-    'someorg' => {
-      # if this org uses different branches
-      # (can further override under the repo)
-      'branches' => ['trunk'],
-      # if you want a different number of days by for repos in this org (can
-      # further override under the repo)
-      'days' => 7,
+    'facebook' => {
       'repositories' => {
-        'repo1' => {},
-        'repo2' => {
-          # crazy repo, only do 2 days
-          'days' => 2,
-          'branches' => ['main'],
-        },
-        'repo3' => {
-          'days' => 30,
-          'branches' => ['main'],
-        },
+        'chef-cookbooks' => {},
       },
     },
-    'anotherorg' => {
-      'days' => 45,
-      'branches' => %w{main oldstuff},
+    'jaymzh' => {
       'repositories' => {
-        'repo1' => {},
-        'repo2' => {},
-        'repo3' => {},
+        'chef-fb-api-cookbooks' => {},
+      },
+    },
+    'boxcutter' => {
+      'repositories' => {
+        'boxcutter-chef-cookbooks' => {},
       },
     },
   },
 )
-
-# limit output to only repos in the top-N trouble-makers along various
-# axes
-#
-# All of these except "N" or "N%" (3 repos, or 3% or repos, for example)
-
-# top_n_stale 3
-#  OR
-# top_n_stale_pr 3
-# top_n_stale_issue 3
-#
-# top_n_oldest 3
-#  OR
-# top_n_oldest_pr 3
-# top_n_oldest_issue 3
-#
-# top_n_time_to_close 3
-#  OR
-# top_n_time_to_close_pr 3
-# top_n_time_to_close_issue 3
-#
-# top_n_most_broken_ci_days 3
-#
-# top_n_most_broken_ci_jobs 3
