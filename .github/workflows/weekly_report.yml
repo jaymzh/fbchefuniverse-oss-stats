@@ -24,11 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Install ImageMagick
-        run: |
-          sudo apt-get update
-          sudo apt-get -y install imagemagick libmagickwand-dev
-
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -42,7 +37,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          test -n "$GH_TOKEN"
           ./scripts/run_report.sh
 
       - name: Commit and open update weekly PR
