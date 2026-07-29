@@ -2,7 +2,9 @@ name: Weekly report
 
 on:
   schedule:
-    - cron: '15 8 * * 4'
+    # wed afternoon at noonish, gives enough
+    # time to merge it, or fix it
+    - cron: '15 12 * * 3'
       timezone: America/Los_Angeles
   workflow_dispatch:
 
